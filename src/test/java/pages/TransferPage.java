@@ -1,0 +1,17 @@
+package pages;
+
+import com.codeborne.selenide.SelenideElement;
+import static com.codeborne.selenide.Selenide.$;
+
+public class TransferPage {
+    private SelenideElement amountField = $("[data-test-id='amount'] input");
+    private SelenideElement fromField = $("[data-test-id='from'] input");
+    private SelenideElement transferButton = $("[data-test-id='action-transfer']");
+
+    public DashboardPage transfer(int amount, String toCardId) {
+        amountField.setValue(String.valueOf(amount));
+        fromField.setValue(toCardId); // В реальности нужно указать номер карты отправителя
+        transferButton.click();
+        return new DashboardPage();
+    }
+}

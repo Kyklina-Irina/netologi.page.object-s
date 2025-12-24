@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version '2.11.2' // опционально, если нужен Allure
+}
+
+group = 'com.netology'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+dependencies {
+    // Selenide для работы с браузером
+    testImplementation 'com.codeborne:selenide:6.19.0'
+
+    // JUnit Jupiter (JUnit 5)
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+
+    // WebDriverManager — автоматическое управление драйверами (опционально, но удобно)
+    testImplementation 'io.github.bonigarcia:webdrivermanager:5.8.0'
+
+    // Логирование (опционально, но полезно при отладке)
+    testImplementation 'org.slf4j:slf4j-simple:2.0.7'
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+
+    // Запуск в headless-режиме по умолчанию (подходит для CI)
+    systemProperty 'selenide.headless', System.getProperty('selenide.headless', 'true')
+    systemProperty 'selenide.browser', System.getProperty('selenide.browser', 'chrome')
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+// Необязательно, но полезно — задача для запуска SUT (вашего JAR)
+task runSut(type: JavaExec) {
+    classpath = files('artifacts/app-ibank-build-for-testers.jar')
+    main = '-jar'
+    args = ['artifacts/app-ibank-build-for-testers.jar']
+    // Запустится на порту 9999 (если не указано иное)
+}
